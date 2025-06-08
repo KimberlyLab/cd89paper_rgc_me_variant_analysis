@@ -20,11 +20,11 @@ plotFilenameAllLog <- "rgc_me_cy_nonsyn_vars.all.log.png"
 plotFilenamePerGene    <- "rgc_me_cy_nonsyn_vars.per_gene.png"
 plotFilenamePerGenePDF <- "rgc_me_cy_nonsyn_vars.per_gene.pdf"
 
-plotFilenamePerGeneNoTitles    <- "rgc_me_cy_nonsyn_vars.per_gene.no_titles.png"
-plotFilenamePerGeneNoTitlesPDF <- "rgc_me_cy_nonsyn_vars.per_gene.no_titles.pdf"
+plotFilenamePerGeneNoTitles    <- "rgc_me_cy_nonsyn_vars.per_gene.no_title.png"
+plotFilenamePerGeneNoTitlesPDF <- "rgc_me_cy_nonsyn_vars.per_gene.no_title.pdf"
 
-plotFilenamePerGeneNoText    <- "rgc_me_cy_nonsyn_vars.per_gene.no_text.png"
-plotFilenamePerGeneNoTextPDF <- "rgc_me_cy_nonsyn_vars.per_gene.no_text.pdf"
+plotFilenamePerGeneNoText    <- "rgc_me_cy_nonsyn_vars.per_gene.no_title_no_rs.png"
+plotFilenamePerGeneNoTextPDF <- "rgc_me_cy_nonsyn_vars.per_gene.no_title_no_rs.pdf"
 
 plotFilenamePerGeneLog <- "rgc_me_cy_nonsyn_vars.per_gene.log.png"
 
@@ -92,7 +92,7 @@ plot2Lin <- ggplot(filteredVariants, aes(x = `ANN[0].GENE`, y = AF)) +
   geom_point(data = top1Variants, aes(x = `ANN[0].GENE`, y = AF), color = "black", size = 3) +  # Centered top 2 points
   labs(title = figureTitle,
        cex= 2.3, x = "Gene",
-       y = "Allele Frequency (%)") +
+       y = "Allele Frequency") +
   theme_minimal() +
   theme(
     # plot title - big and centered
@@ -106,7 +106,38 @@ plot2Lin <- ggplot(filteredVariants, aes(x = `ANN[0].GENE`, y = AF)) +
     axis.text.y = element_text(size = 14)   # Increase y-axis tick label size
   )
 plot2LinRs <- plot2Lin  +
-  geom_text_repel(data = top1Variants, aes(label = ID), size = 4, color = "black", nudge_x=1, nudge_y=-0.01)   # Add labels for top 2 AF values
+  # geom_text_repel(data = top1Variants, aes(label = ID), size = 4, color = "black", nudge_x=1, nudge_y=-0.01)   # Add labels for top 2 AF values
+  geom_text_repel(
+    data = top1Variants,
+    aes(label = ID),
+    size = 4, 
+    color = "black",
+    segment.size = 0.5,  # Line thickness
+    segment.color = NA, #"black",  # Line color
+    nudge_y = -0.025,  # Adjust text position
+    nudge_x = 1.6,  # Adjust text position
+    segment.curvature = -0.2,  # Adds slight curve to move arrow back
+    segment.ncp = 3,  # More points for a smoother curve
+    segment.angle = 30  # Adjusts angle to make sure it pulls back
+    #segment.length = unit(0.1, "npc"),
+    # arrow = arrow(length = unit(0.03, "npc"), type = "closed", ends = "last",)  # Add arrow
+  )
+plot2LinRsArrow <- plot2Lin  +
+  # geom_text_repel(data = top1Variants, aes(label = ID), size = 4, color = "black", nudge_x=1, nudge_y=-0.01)   # Add labels for top 2 AF values
+  geom_text_repel(
+    data = top1Variants,
+    aes(label = ID),
+    size = 4, 
+    color = "black",
+    segment.size = 0.5,  # Line thickness
+    segment.color = "black",  # Line color
+    nudge_y = -0.025,  # Adjust text position
+    nudge_x = 1.6,  # Adjust text position
+    segment.curvature = -0.2,  # Adds slight curve to move arrow back
+    segment.ncp = 3,  # More points for a smoother curve
+    segment.angle = 30,  # Adjusts angle to make sure it pulls back
+    arrow = arrow(length = unit(0.03, "npc"), type = "closed", ends = "last",)  # Add arrow
+  )
 
 ggsave(plotFilenamePerGene, plot = plot2LinRs, width = 8, height = 5, dpi = 300)
 cat(paste0("PLOT: ", plotFilenamePerGene, "\n"))
@@ -117,10 +148,10 @@ print(plot2Lin)
 #
 # create a version w/o titles
 #
-plot2LinNoTitles = plot2LinRs + theme(
+plot2LinNoTitles = plot2LinRsArrow + theme(
   plot.title   = element_blank(),
-  axis.title.y = element_blank(),
-  axis.title.x = element_blank()
+#  axis.title.y = element_blank(),
+#  axis.title.x = element_blank()
 )
 ggsave(plotFilenamePerGeneNoTitles, plot = plot2LinNoTitles, width = 8, height = 5, dpi = 300)
 cat(paste0("PLOT: ", plotFilenamePerGeneNoTitles, "\n"))
@@ -132,10 +163,6 @@ cat(paste0("PLOT: ", plotFilenamePerGeneNoTitlesPDF, "\n"))
 #
 plot2LinNoText = plot2Lin + theme(
   plot.title   = element_blank(),
-  axis.title.y = element_blank(),
-  axis.title.x = element_blank(),
-  axis.text.y = element_blank(),
-  axis.text.x = element_blank()
 )
 ggsave(plotFilenamePerGeneNoText, plot = plot2LinNoText, width = 8, height = 5, dpi = 300)
 cat(paste0("PLOT: ", plotFilenamePerGeneNoText, "\n"))
